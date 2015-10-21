@@ -1,0 +1,29 @@
+#board {
+  width: 800px;
+  margin: 0 auto;
+}
+.cell {
+  height: 200px;
+  width: 200px;
+  padding-left: 100px;
+}
+.ver {
+  border-left: solid 10px;
+  border-right: solid 10px;
+}
+.hor {
+  border-top: solid 10px;
+  border-bottom: solid 10px;
+}
+[data-symbol="x"] {
+  background-image: url('img/X.gif');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+[data-symbol="o"]  {
+  background-image: url('img/O.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
