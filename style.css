@@ -1,12 +1,36 @@
+
 #board {
   width: 800px;
   margin: 0 auto;
 }
-.cell {
-  height: 200px;
-  width: 200px;
-  padding-left: 100px;
+
+h1 {
+	font-family: 'Indie Flower';
+	font-size: 72px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 26.4px;
+  text-align: center;
 }
+
+h3 {
+	font-family: 'Indie Flower';
+	font-size: 24px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 26.4px;
+  text-align: center;
+}
+
+.cell {
+  height: 150px;
+  width: 150px;
+  padding-left: 75px;
+  cursor: pointer;
+}
+
 .ver {
   border-left: solid 10px;
   border-right: solid 10px;
@@ -14,6 +38,10 @@
 .hor {
   border-top: solid 10px;
   border-bottom: solid 10px;
+}
+
+table {
+  margin: 0 auto;
 }
 [data-symbol="x"] {
   background-image: url('img/X.gif');
