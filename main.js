@@ -21,13 +21,29 @@
     console.log(this);
     if(this.getAttribute('data-symbol') === '-')
     {
+      // What am I doing??? It's impossible for humans to win! Buhauhauhauh! :o
+      var winningO = checkWinningMove('O', cellNum, board);
       this.setAttribute('data-symbol', 'o');
       var cellNum = this.getAttribute('id');
       board[cellNum] = 'O';
-      moveX();
+      if(winningO) {
+        alert("Player O won!");
+        stopGame();
+      } else {
+        moveX();
+      }
     }
   }
 
+function stopGame() {
+  var allMinusCell = document.getElementsByClassName('cell');
+  // Disable all the free cell
+  board.forEach(function(item, index) {
+    if(item === '-') {
+      allMinusCell[index].setAttribute('data-symbol', '*');
+    }
+  });
+}
   for (var i = 0; i < cells.length; ++i) {
     console.log(cells[i]);
     cells[i].addEventListener("click", addOClass);
@@ -237,6 +253,11 @@
     Xcell.setAttribute('data-symbol', 'x');
 
     board[move] = 'X';
+    var winningX = checkWinningMove('X', move, board);
+    if(winningX) {
+      alert('Player X won');
+      stopGame();
+    }
   }
 
 })();
