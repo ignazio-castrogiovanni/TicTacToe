@@ -1,11 +1,8 @@
 (function() {
 
-    // Set a grid for tic tac toe and initialise it
-    var board = [];
+  var level = 1;
 
-    for (var i = 0; i < 9; ++i) {
-      board.push('-');
-    }
+
 
     // (1) Initialize every cell with an event listener
     // (2) Create a function that put a 'O' class on that cell,
@@ -15,7 +12,9 @@
     // (6) Create a function that put a 'X' class on a cell
     // (7) Create a function that remove that function from event listening
     // (8)
+    var board = [];
     var cells = document.getElementsByClassName('cell');
+    initGame();
 
     function addOClass() {
       console.log(this);
@@ -28,13 +27,21 @@
         var boardStatus = checkBoardStatus();
 
 
+        if(boardStatus === 'tie') {
+          initGame();
+        }
+
         //var winningO = checkWinningMove('O', Number(cellNum), board);
         if (boardStatus === 'O') {
           alert("Player O won!");
-          stopGame();
+          //stopGame();
+          level += 1;
+          initGame();
+          //refresh game
         } else {
           moveX();
         }
+
       }
     }
 
@@ -47,10 +54,25 @@
         }
       });
     }
+
     for (var cellIter = 0; cellIter < cells.length; ++cellIter) {
-      console.log(cells[cellIter]);
-      cells[cellIter].addEventListener("click", addOClass);
-    }
+     console.log(cells[cellIter]);
+     cells[cellIter].addEventListener("click", addOClass);
+   }
+
+function initGame() {
+  // Set a grid for tic tac toe and initialise it
+  board = [];
+  for (var i = 0; i < 9; ++i) {
+    board.push('-');
+  }
+  for (var cIt = 0; cIt < cells.length; cIt++) {
+    cells[cIt].setAttribute('data-symbol', '-');
+  }
+  var levElem = document.getElementById('depth');
+  levElem.innerHTML = level;
+}
+
 
     // -------------    GAME LOGIC    -------------- //
     // Define a function to check a winner on a move
@@ -149,7 +171,7 @@
       for (cellIt = 0; cellIt < 9; cellIt++) {
         if (board[cellIt] === '-') {
           board[cellIt] = 'X';
-          newMoveScore = chooseMove('O', 20);
+          newMoveScore = chooseMove('O', level);
           decBoard[cellIt] = newMoveScore;
           if (newMoveScore > bestScore) {
             bestScore = newMoveScore;
@@ -181,17 +203,27 @@
         if(board[move] !== '-') {
           return;
         }
-        
+
         var Xcell = document.getElementById('' + move);
         Xcell.setAttribute('data-symbol', 'x');
 
 
         board[move] = 'X';
         var boardStatus = checkBoardStatus();
+
+        if(boardStatus === 'tie') {
+          initGame();
+        }
+
         if (boardStatus === 'X') {
           alert('Player X won');
-          stopGame();
+          if(level !== 1) {
+            level -= 1;
+            initGame();
+          }
+          //stopGame();
         }
+
       }
 
     })();
