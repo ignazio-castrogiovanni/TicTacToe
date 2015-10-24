@@ -1,263 +1,197 @@
 (function() {
 
-  // Set a grid for tic tac toe and initialise it
-  var board = [];
-  var AIMove = null;
-  for (var i = 0; i < 9; ++i) {
-    board.push('-');
-  }
+    // Set a grid for tic tac toe and initialise it
+    var board = [];
 
-  // (1) Initialize every cell with an event listener
-  // (2) Create a function that put a 'O' class on that cell,
-  // (3) Create a function that remove that function from the event listening
-  // (4) Attach function on (2) to the event listener
-  // (5) Remove the function when the event is triggered
-  // (6) Create a function that put a 'X' class on a cell
-  // (7) Create a function that remove that function from event listening
-  // (8)
-  var cells = document.getElementsByClassName('cell');
+    for (var i = 0; i < 9; ++i) {
+      board.push('-');
+    }
 
-  function addOClass() {
-    console.log(this);
-    if(this.getAttribute('data-symbol') === '-')
-    {
-      // What am I doing??? It's impossible for humans to win! Buhauhauhauh! :o
-      var winningO = checkWinningMove('O', cellNum, board);
-      this.setAttribute('data-symbol', 'o');
-      var cellNum = this.getAttribute('id');
-      board[cellNum] = 'O';
-      if(winningO) {
-        alert("Player O won!");
-        stopGame();
-      } else {
-        moveX();
+    // (1) Initialize every cell with an event listener
+    // (2) Create a function that put a 'O' class on that cell,
+    // (3) Create a function that remove that function from the event listening
+    // (4) Attach function on (2) to the event listener
+    // (5) Remove the function when the event is triggered
+    // (6) Create a function that put a 'X' class on a cell
+    // (7) Create a function that remove that function from event listening
+    // (8)
+    var cells = document.getElementsByClassName('cell');
+
+    function addOClass() {
+      console.log(this);
+      if (this.getAttribute('data-symbol') === '-') {
+        this.setAttribute('data-symbol', 'o');
+        var cellNum = this.getAttribute('id');
+        board[cellNum] = 'O';
+        // What am I doing??? It's impossible for humans to win! Buhauhauhauh! :o
+
+        var boardStatus = checkBoardStatus();
+
+
+        //var winningO = checkWinningMove('O', Number(cellNum), board);
+        if (boardStatus === 'O') {
+          alert("Player O won!");
+          stopGame();
+        } else {
+          moveX();
+        }
       }
     }
-  }
 
-function stopGame() {
-  var allMinusCell = document.getElementsByClassName('cell');
-  // Disable all the free cell
-  board.forEach(function(item, index) {
-    if(item === '-') {
-      allMinusCell[index].setAttribute('data-symbol', '*');
+    function stopGame() {
+      var allMinusCell = document.getElementsByClassName('cell');
+      // Disable all the free cell
+      board.forEach(function(item, index) {
+        if (item === '-') {
+          allMinusCell[index].setAttribute('data-symbol', '*');
+        }
+      });
     }
-  });
+    for (var cellIter = 0; cellIter < cells.length; ++cellIter) {
+      console.log(cells[cellIter]);
+      cells[cellIter].addEventListener("click", addOClass);
+    }
+
+    // -------------    GAME LOGIC    -------------- //
+    // Define a function to check a winner on a move
+
+    // Check board status
+    function checkBoardStatus() {
+
+      // Return the winning player, 'tie' if the game is a tie, false is the game is still going
+
+      var cIter;
+      // Check horizontal Winning
+      for (cIter = 0; cIter < 9; cIter += 3) {
+        if ((board[cIter] !== '-') && (board[cIter] === board[cIter + 1]) && (board[cIter] === board[cIter + 2])) {
+          return board[cIter];
+        }
+      }
+
+      // Check vertical Winning
+      for (cIter = 0; cIter < 3; ++cIter) {
+        if ((board[cIter] !== '-') && (board[cIter] === board[cIter + 3]) && (board[cIter] === board[cIter + 6])) {
+          return board[cIter];
+        }
+      }
+
+      // Check for diagonal Winning
+      if ((board[0] !== '-') && (board[0] === board[4]) && (board[4] === board[8])) {
+        return board[0];
+      }
+      if ((board[2] !== '-') && (board[2] === board[4]) && (board[4] === board[6])) {
+        return board[2];
+      }
+      var gameStillGoing = board.some(function(item) {
+        return (item === '-');
+      });
+
+      if (gameStillGoing) {
+        return false;
+      }
+      // If none of these condition it's a tie
+      return 'tie';
+    }
+
+    // -------------- ARTIFICIAL INTELLIGENCE ENGINE --------------- //
+    function chooseMove(player, depth) {
+      // Algorhitm minmax
+      // X max, O min
+      var iterator, bestResult;
+      var boardStatus = checkBoardStatus();
+      if (boardStatus === 'O') {
+        return -99980 - depth;
+      } else if (boardStatus === 'X') {
+        return 99980 + depth;
+      } else if ((boardStatus === 'tie') || (depth === 0)) {
+        return 0;
+      }
+
+      // Guessing human move
+      if (player === 'O') {
+        bestResult = 100000;
+        for (iterator = 0; iterator < 9; iterator++) {
+          if(board[iterator] === '-') {
+            board[iterator] = 'O';
+            bestResult = Math.min(bestResult, chooseMove('X', depth - 1));
+            board[iterator] = '-';
+          }
+        }
+      }
+      // Our (computer) move
+      else {
+        bestResult = -100000;
+        for (iterator = 0; iterator < 9; iterator++) {
+          if(board[iterator] === '-') {
+            board[iterator] = 'X';
+            bestResult = Math.max(bestResult, chooseMove('O', depth - 1));
+            board[iterator] = '-';
+          }
+        }
+      }
+      //console.log("Board: " + board);
+      //console.log("Best result: " + bestResult)
+      return bestResult;
+    }
+
+
+    // console.log("Player: 'O'");
+    // console.log(boardToPrint[0] + " " + boardToPrint[1] + " " + boardToPrint[2]);
+    // console.log(boardToPrint[3] + " " + boardToPrint[4] + " " + boardToPrint[5]);
+    // console.log(boardToPrint[6] + " " + boardToPrint[7] + " " + boardToPrint[8]);
+    // console.log(bestScore);
+
+    function moveX() {
+      var cellIt, newMoveScore;
+      var bestMove = 4;
+      var bestScore = -100000;
+      var decBoard = [-100000, -100000, -100000, -100000, -100000, -100000, -100000, -100000, -100000];
+      for (cellIt = 0; cellIt < 9; cellIt++) {
+        if (board[cellIt] === '-') {
+          board[cellIt] = 'X';
+          newMoveScore = chooseMove('O', 20);
+          decBoard[cellIt] = newMoveScore;
+          if (newMoveScore > bestScore) {
+            bestScore = newMoveScore;
+            bestMove = cellIt;
+          }
+          board[cellIt] = '-';
+        }
+      }
+      console.log("decision board: " + decBoard);
+      console.log("best move: " + bestMove);
+      updateBoardWithXMove(bestMove);
+      //   var maxNum = decBoard.reduce(function(prev, current) {
+      //     if (prev > current) {
+      //       return prev;
+      //     }
+      //     return current;
+      //   });
+      //   if (maxNum === -1000) {
+      //     return;
+      //   }
+      //   AIMove = decBoard.indexOf(maxNum);
+      //   console.log('Best Score: ' + bestScore);
+      //   console.log('AIMove = ' + AIMove);
+      //   console.log('Decision board: ' + decBoard);
+      //   updateBoardWithXMove(AIMove);
+      // }
 }
-  for (var i = 0; i < cells.length; ++i) {
-    console.log(cells[i]);
-    cells[i].addEventListener("click", addOClass);
-  }
-
-  // -------------    GAME LOGIC    -------------- //
-  // Define a function to check a winner on a move
-  function checkWinningMove(player, move, board) {
-    switch (move) {
-      case 0:
-        {
-          if (((board[1] == player) && (board[2] == player)) ||
-            ((board[3] == player) && (board[6] == player)) ||
-            ((board[4] == player) && (board[8] == player))) {
-            return true;
-          }
-          return false;
+      function updateBoardWithXMove(move) {
+        if(board[move] !== '-') {
+          return;
         }
-        break;
-      case 1:
-        {
-          if (((board[0] == player) && (board[2] == player)) ||
-            ((board[4] == player) && (board[7] == player))) {
-            return true;
-          }
-          return false;
-        }
-        break;
-      case 2:
-        {
-          if (((board[0] == player) && (board[1] == player)) ||
-            ((board[5] == player) && (board[8] == player)) ||
-            ((board[4] == player) && (board[6] == player))) {
-            return true;
-          }
-          return false;
-        }
-        break;
-      case 3:
-        {
-          if (((board[0] == player) && (board[6] == player)) ||
-            ((board[4] == player) && (board[5] == player))) {
-            return true;
-          }
-          return false;
-        }
-        break;
-      case 4:
-        {
-          if (((board[0] == player) && (board[8] == player)) ||
-            ((board[1] == player) && (board[7] == player)) ||
-            ((board[2] == player) && (board[6] == player)) ||
-            ((board[3] == player) && (board[5] == player))
-          ) {
-            return true;
-          }
-          return false;
-        }
-        break;
-      case 5:
-        {
-          if (((board[2] == player) && (board[8] == player)) ||
-            ((board[3] == player) && (board[4] == player))) {
-            return true;
-          }
-          return false;
-        }
-        break;
-      case 6:
-        {
-          if (((board[0] == player) && (board[3] == player)) ||
-            ((board[2] == player) && (board[4] == player)) ||
-            ((board[7] == player) && (board[8] == player))) {
-            return true;
-          }
-          return false;
-        }
-        break;
-      case 7:
-        {
-          if (((board[1] == player) && (board[4] == player)) ||
-            ((board[6] == player) && (board[8] == player))) {
-            return true;
-          }
-          return false;
-        }
-        break;
-      case 8:
-        {
-          if (((board[0] == player) && (board[4] == player)) ||
-            ((board[2] == player) && (board[5] == player)) ||
-            ((board[6] == player) && (board[7] == player))) {
-            return true;
-          }
-          return false;
-        }
-        break;
-      default:
-        break;
-    }
-  }
-
-  // Define a function to check a tie
-  function isMoveATie(move, board, player) {
-    // Let's give the main responsability to the checkWinningMove function,
-    // so if it hasn't find a win the tie consists just of checking the board is full!
-
-    var tmpBoard = board.slice();
-    tmpBoard[move] = player;
-
-    return !tmpBoard.some(function(item, index) {
-      return (item === '-' && item != index);
-    });
-  }
+        
+        var Xcell = document.getElementById('' + move);
+        Xcell.setAttribute('data-symbol', 'x');
 
 
-
-  // -------------- ARTIFICIAL INTELLIGENCE ENGINE --------------- //
-  function chooseMove(player, board, move) {
-    AIMove = move;
-    // Algorhitm minmax
-    // X max, O min
-    var bestScore, bestMove, newBoard;
-    if (player === 'X') {
-      //console.log("Player X move")
-      if (checkWinningMove(player, move, board)) {
-        //console.log("Winning move");
-        return 10;
-      } else if (isMoveATie(move, board, player)) {
-        //console.log("Move is a tie");
-        return 0;
-      } else {
-        bestScore = -1000;
-        bestMove = null;
-        newBoard = board.slice();
-        newBoard[move] = 'X';
-        newBoard.forEach(function(item, index) {
-          if (item === '-') {
-            var newMoveScore = chooseMove('O', newBoard, index);
-            if (newMoveScore > bestScore) {
-              //console.log("X says " + bestMove + "worth " + bestScore);
-              bestScore = newMoveScore;
-              AIMove = index;
-            }
-          }
-        });
-        return bestScore;
-      }
-    } else { // Player is O
-      if (checkWinningMove(player, move, board)) {
-        return -10;
-      } else if (isMoveATie(move, board, player)) {
-        return 0;
-      } else {
-        bestScore = 1000;
-        bestMove = null;
-        newBoard = board.slice();
-        newBoard[move] = 'O';
-        newBoard.forEach(function(item, index) {
-          //console.log(index);
-          if (item === '-') {
-            var newMoveScore = chooseMove('X', newBoard, index);
-            if (newMoveScore < bestScore) {
-              //console.log("O says " + bestMove + "worth " + bestScore);
-              bestScore = newMoveScore;
-              //AIMove = index;
-            }
-          }
-        });
-        return bestScore;
-      }
-    }
-  }
-
-  function moveX() {
-    var bestScore = -1000;
-    var decBoard = [-1000,-1000,-1000,-1000,-1000,-1000,-1000,-1000,-1000];
-    board.forEach(function(item, index) {
-      if (item === '-') {
-        var newMoveScore = chooseMove('X', board, index);
-        decBoard[index] = newMoveScore;
-        if (newMoveScore > bestScore) {
-          //console.log("X says " + bestMove + "worth " + bestScore);
-          bestScore = newMoveScore;
+        board[move] = 'X';
+        var boardStatus = checkBoardStatus();
+        if (boardStatus === 'X') {
+          alert('Player X won');
+          stopGame();
         }
       }
-    });
 
-    var maxNum = decBoard.reduce(function(prev, current, index, array){
-      if(prev > current) {
-        return prev;
-      }
-      return current;
-    });
-    if(maxNum === -1000) {
-      return;
-    }
-    AIMove =  decBoard.indexOf(maxNum);
-    console.log('Best Score: ' + bestScore);
-    console.log('AIMove = ' + AIMove);
-    console.log('Decision board: ' + decBoard);
-    updateBoardWithXMove(AIMove);
-  }
-
-  function updateBoardWithXMove(move) {
-    var Xcell = document.getElementById(''+move);
-    Xcell.setAttribute('data-symbol', 'x');
-
-    board[move] = 'X';
-    var winningX = checkWinningMove('X', move, board);
-    if(winningX) {
-      alert('Player X won');
-      stopGame();
-    }
-  }
-
-})();
+    })();
