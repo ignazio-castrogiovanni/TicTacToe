@@ -14,13 +14,16 @@
     // (8)
     var board = [];
     var cells = document.getElementsByClassName('cell');
+    var table = document.getElementById('tttTable');
     initGame();
 
-    function addOClass() {
-      console.log(this);
-      if (this.getAttribute('data-symbol') === '-') {
-        this.setAttribute('data-symbol', 'o');
-        var cellNum = this.getAttribute('id');
+    function addOClass(e) {
+      var cell = e.target;
+      console.log(e.target);
+      //console.log(this);
+      if (cell.getAttribute('data-symbol') === '-') {
+        cell.setAttribute('data-symbol', 'o');
+        var cellNum = cell.getAttribute('id');
         board[cellNum] = 'O';
         // What am I doing??? It's impossible for humans to win! Buhauhauhauh! :o
 
@@ -55,10 +58,12 @@
       });
     }
 
-    for (var cellIter = 0; cellIter < cells.length; ++cellIter) {
-     console.log(cells[cellIter]);
-     cells[cellIter].addEventListener("click", addOClass);
-   }
+    table.addEventListener("click", addOClass);
+    //cells.addEventListener("click", addOClass);
+    //for (var cellIter = 0; cellIter < cells.length; ++cellIter) {
+    // console.log(cells[cellIter]);
+    // cells[cellIter].addEventListener("click", addOClass);
+   //}
 
 function initGame() {
   // Set a grid for tic tac toe and initialise it
