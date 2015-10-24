@@ -12,16 +12,7 @@ h1 {
 	font-weight: 500;
 	line-height: 26.4px;
   text-align: center;
-}
-
-h2 {
-	font-family: 'Indie Flower';
-	font-size: 47px;
-	font-style: normal;
-	font-variant: normal;
-	font-weight: 500;
-	line-height: 26.4px;
-  text-align: center;
+  margin: 5px;
 }
 
 h3 {
@@ -32,11 +23,12 @@ h3 {
 	font-weight: 500;
 	line-height: 26.4px;
   text-align: center;
+  margin: 20px;
 }
 
 .cell {
-  height: 150px;
-  width: 150px;
+  height: 140px;
+  width: 140px;
   padding-left: 75px;
   cursor: pointer;
 }
