@@ -32,6 +32,7 @@
 
         if(boardStatus === 'tie') {
           initGame();
+          return;
         }
 
         //var winningO = checkWinningMove('O', Number(cellNum), board);
@@ -59,11 +60,6 @@
     }
 
     table.addEventListener("click", addOClass);
-    //cells.addEventListener("click", addOClass);
-    //for (var cellIter = 0; cellIter < cells.length; ++cellIter) {
-    // console.log(cells[cellIter]);
-    // cells[cellIter].addEventListener("click", addOClass);
-   //}
 
 function initGame() {
   // Set a grid for tic tac toe and initialise it
@@ -156,17 +152,8 @@ function initGame() {
           }
         }
       }
-      //console.log("Board: " + board);
-      //console.log("Best result: " + bestResult)
       return bestResult;
     }
-
-
-    // console.log("Player: 'O'");
-    // console.log(boardToPrint[0] + " " + boardToPrint[1] + " " + boardToPrint[2]);
-    // console.log(boardToPrint[3] + " " + boardToPrint[4] + " " + boardToPrint[5]);
-    // console.log(boardToPrint[6] + " " + boardToPrint[7] + " " + boardToPrint[8]);
-    // console.log(bestScore);
 
     function moveX() {
       var cellIt, newMoveScore;
@@ -188,21 +175,6 @@ function initGame() {
       console.log("decision board: " + decBoard);
       console.log("best move: " + bestMove);
       updateBoardWithXMove(bestMove);
-      //   var maxNum = decBoard.reduce(function(prev, current) {
-      //     if (prev > current) {
-      //       return prev;
-      //     }
-      //     return current;
-      //   });
-      //   if (maxNum === -1000) {
-      //     return;
-      //   }
-      //   AIMove = decBoard.indexOf(maxNum);
-      //   console.log('Best Score: ' + bestScore);
-      //   console.log('AIMove = ' + AIMove);
-      //   console.log('Decision board: ' + decBoard);
-      //   updateBoardWithXMove(AIMove);
-      // }
 }
       function updateBoardWithXMove(move) {
         if(board[move] !== '-') {
@@ -226,9 +198,7 @@ function initGame() {
             level -= 1;
             initGame();
           }
-          //stopGame();
         }
-
       }
 
     })();
