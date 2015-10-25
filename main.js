@@ -1,7 +1,10 @@
 (function() {
-  'use strict'
+  'use strict';
   // Initial level
   var level = 1;
+
+  var computerIsThinking = false;
+  var thinkingIntID;
 
   // Setting the board
   var board = [];
@@ -17,15 +20,18 @@
     board = [];
     for (var i = 0; i < 9; ++i) {
       board.push('-');
+      cells[i].setAttribute('data-symbol', '-');
     }
-    for (var cIt = 0; cIt < cells.length; cIt++) {
-      cells[cIt].setAttribute('data-symbol', '-');
-    }
+
     var levElem = document.getElementById('depth');
     levElem.innerHTML = level;
   }
 
   function moveO(e) {
+    if(computerIsThinking) {
+      return;
+    }
+
     var currentCell = e.target;
     if (currentCell.getAttribute('data-symbol') === '-') {
       currentCell.setAttribute('data-symbol', 'o');
@@ -42,7 +48,7 @@
   }
 
   function moveX() {
-    var cellIt, newMoveScore;
+    var newMoveScore;
     var bestMove = 4;
     var bestScore = -100000;
     board.forEach(function(item, index) {
@@ -57,21 +63,38 @@
 
       }
     });
-    // for (cellIt = 0; cellIt < 9; cellIt++) {
-    //   if (board[cellIt] === '-') {
-    //     board[cellIt] = 'X';
-    //     newMoveScore = chooseMove('O', level);
-    //     if (newMoveScore > bestScore) {
-    //       bestScore = newMoveScore;
-    //       bestMove = cellIt;
-    //     }
-    //     board[cellIt] = '-';
-    //   }
-    // }
-    updateBoardWithXMove(bestMove);
+    
+    // Giving a random waiting time leaves the impression of the machine thinking (Justin's suggestion)
+    // Let's try with a maximum of 3 seconds
+    var maximumTinkingTime = 3000;
+    var thinkingTimeRefresh = 25;
+    var thinkingTime = Math.random() * maximumTinkingTime;
+
+    computerIsThinking = true;
+    setTimeout(updateBoardWithXMove, thinkingTime, bestMove);
+    var thinkingText = document.getElementById('thinkingText');
+    thinkingIntID = setInterval(updateThinking, thinkingTimeRefresh, computerIsThinking);
   }
 
+  function updateThinking(thinking) {
+    if(thinking) {
+      var imaginaryBoard = [];
+      for(var j = 0; j < 9; ++j) {
+        var rndElem = Math.random() < 0.5 ? 'O' : 'X';
+        imaginaryBoard.push(rndElem);
+      }
+      var imaginaryThinking = '[' + imaginaryBoard.join(' ') + ']';
+      thinkingText.innerHTML = imaginaryThinking;
+    } else {
+      thinkingText.innerHTML = "&nbsp";
+    }
+  }
+
+
   function updateBoardWithXMove(move) {
+    clearInterval(thinkingIntID);
+    computerIsThinking = false;
+    updateThinking(computerIsThinking);
 
     var Xcell = document.getElementById('' + move);
     Xcell.setAttribute('data-symbol', 'x');
@@ -82,6 +105,7 @@
     if (boardFinalStatus) {
       closeAndRestartGame(boardFinalStatus);
     }
+
   }
 
   function closeAndRestartGame(boardStatus) {
